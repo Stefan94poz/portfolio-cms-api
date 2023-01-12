@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, Res, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-auth.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -12,8 +13,9 @@ export class AuthController {
 
   @Post('login')
   @UseGuards(LocalAuthGuard)
-  login(@Body() loginUserDto: LoginUserDto, @Request() req) {
-    return this.authService.login({ ...loginUserDto, id: req.user.id, name: req.user.name });
+  login(@Body() loginUserDto: LoginUserDto, @Request() req, @Res() res: Response) {
+    // Has to be type from Express Response
+    return this.authService.login({ ...loginUserDto, id: req.user.id, name: req.user.name }, res);
   }
 
   @Get('me')

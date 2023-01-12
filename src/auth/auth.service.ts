@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { LoginUserDto } from './dto/login-auth.dto';
 import * as bcrypt from 'bcrypt';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -10,7 +11,7 @@ export class AuthService {
 
   async validate(email: string, password: string): Promise<any> {
     const user = await this.userService.findOneByEmail(email);
-    const isMatch = await this.isMatch(password, user.password);
+    const isMatch = user && (await this.isMatch(password, user.password));
 
     if (user && isMatch) {
       const { password, ...result } = user;
@@ -21,15 +22,21 @@ export class AuthService {
     return null;
   }
 
-  async login(loginUserDto: LoginUserDto) {
+  async login(loginUserDto: LoginUserDto, res: Response) {
     const { id, name, email } = loginUserDto;
 
-    const payload = { sub: id, email: email, name: name }; // Here
+    const payload = { sub: id, email: email, name: name };
+    const token = this.jwtService.sign(payload);
 
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+    if (!token) {
+      throw new ForbiddenException();
+    }
+
+    res.cookie('access_token', token, { httpOnly: true });
+    return res.send({ message: 'Succesful' });
   }
+
+  async logout(loginUserDto: LoginUserDto, res: Response) {}
 
   async isMatch(inputPassowrd: string, dbPassword: string) {
     return await bcrypt.compare(inputPassowrd, dbPassword);
