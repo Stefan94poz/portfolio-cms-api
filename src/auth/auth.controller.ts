@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Request, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Request, Res, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
@@ -16,6 +16,12 @@ export class AuthController {
   login(@Body() loginUserDto: LoginUserDto, @Request() req, @Res() res: Response) {
     // Has to be type from Express Response
     return this.authService.login({ ...loginUserDto, id: req.user.id, name: req.user.name }, res);
+  }
+
+  @Post('/logout')
+  logout(@Res() res: Response) {
+    // Has to be type from Express Response
+    return this.authService.logout(res);
   }
 
   @Get('me')

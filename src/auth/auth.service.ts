@@ -33,10 +33,13 @@ export class AuthService {
     }
 
     res.cookie('access_token', token, { httpOnly: true });
-    return res.send({ message: 'Succesful' });
+    return res.send({ message: 'Succesful login' });
   }
 
-  async logout(loginUserDto: LoginUserDto, res: Response) {}
+  async logout(res: Response) {
+    res.clearCookie('access_token');
+    return res.send({ message: 'Logout' });
+  }
 
   async isMatch(inputPassowrd: string, dbPassword: string) {
     return await bcrypt.compare(inputPassowrd, dbPassword);
