@@ -19,6 +19,10 @@ export class ProjectsService {
     return this.prisma.project.findUnique({ where: { id } });
   }
 
+  findBySlug(slug: string) {
+    return this.prisma.project.findFirst({ where: { slug } });
+  }
+
   update(id: string, updateProjectDto: UpdateProjectDto) {
     return this.prisma.project.update({ data: updateProjectDto, where: { id } });
   }

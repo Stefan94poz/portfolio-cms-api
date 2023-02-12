@@ -25,6 +25,10 @@ export class ProjectsController {
   findOne(@Param('id') id: string) {
     return this.projectsService.findOne(id);
   }
+  @Get('/slug/:slug')
+  findOneByName(@Param('slug') slug: string) {
+    return this.projectsService.findBySlug(slug);
+  }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
